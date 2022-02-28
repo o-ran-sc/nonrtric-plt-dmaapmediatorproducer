@@ -1,0 +1,13 @@
+{
+  "types":
+    [
+      {
+        "id": "STD_Fault_Messages",
+        "dmaapTopicUrl": "/events/unauthenticated.SEC_FAULT_OUTPUT/dmaapmediatorproducer/STD_Fault_Messages"
+      },
+      {
+        "id": "Kafka_TestTopic",
+        "kafkaInputTopic": "TestTopic"
+      }
+  ]
+}

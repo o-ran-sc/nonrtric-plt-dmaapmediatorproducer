@@ -1,0 +1,33 @@
+# Documentation
+.idea/
+.tox
+docs/_build/
+.DS_STORE
+.swagger*
+docs/offeredapis/swagger/README.md
+
+# Eclipse
+.checkstyle
+.classpath
+target/
+.sts4-cache
+.project
+.settings
+.pydevproject
+infer-out/
+
+.vscode
+.factorypath
+
+coverage.*
+
+.history
+main
+dmaapmediatorproducer
+__debug_bin*
+consumer
+!consumer/
+dmaap
+!dmaap/
+ics
+!ics/
