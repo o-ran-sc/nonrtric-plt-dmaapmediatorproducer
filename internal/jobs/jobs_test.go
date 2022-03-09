@@ -35,13 +35,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"oransc.org/nonrtric/dmaapmediatorproducer/internal/config"
 	"oransc.org/nonrtric/dmaapmediatorproducer/internal/kafkaclient"
-	"oransc.org/nonrtric/dmaapmediatorproducer/mocks"
+	kafkamocks "oransc.org/nonrtric/dmaapmediatorproducer/internal/kafkaclient/mocks"
 )
 
 func TestJobsManagerLoadTypesFromConfiguration_shouldReturnSliceOfTypesAndProvideSupportedTypes(t *testing.T) {
 	assertions := require.New(t)
 
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 
 	wantedDMaaPType := config.TypeDefinition{
 		Identity:      "type1",
@@ -65,7 +65,7 @@ func TestJobsManagerLoadTypesFromConfiguration_shouldReturnSliceOfTypesAndProvid
 
 func TestJobsManagerAddJobWhenTypeIsSupported_shouldAddJobToChannel(t *testing.T) {
 	assertions := require.New(t)
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 	wantedJob := JobInfo{
 		Owner:            "owner",
 		LastUpdated:      "now",
@@ -93,7 +93,7 @@ func TestJobsManagerAddJobWhenTypeIsSupported_shouldAddJobToChannel(t *testing.T
 
 func TestJobsManagerAddJobWhenTypeIsNotSupported_shouldReturnError(t *testing.T) {
 	assertions := require.New(t)
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 	jobInfo := JobInfo{
 		InfoTypeIdentity: "type1",
 	}
@@ -105,7 +105,7 @@ func TestJobsManagerAddJobWhenTypeIsNotSupported_shouldReturnError(t *testing.T)
 
 func TestJobsManagerAddJobWhenJobIdMissing_shouldReturnError(t *testing.T) {
 	assertions := require.New(t)
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 	managerUnderTest.allTypes["type1"] = TypeData{
 		Identity: "type1",
 	}
@@ -120,7 +120,7 @@ func TestJobsManagerAddJobWhenJobIdMissing_shouldReturnError(t *testing.T) {
 
 func TestJobsManagerAddJobWhenTargetUriMissing_shouldReturnError(t *testing.T) {
 	assertions := require.New(t)
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 	managerUnderTest.allTypes["type1"] = TypeData{
 		Identity: "type1",
 	}
@@ -136,7 +136,7 @@ func TestJobsManagerAddJobWhenTargetUriMissing_shouldReturnError(t *testing.T) {
 
 func TestJobsManagerDeleteJob_shouldSendDeleteToChannel(t *testing.T) {
 	assertions := require.New(t)
-	managerUnderTest := NewJobsManagerImpl(nil, "", kafkaclient.KafkaFactoryImpl{}, nil)
+	managerUnderTest := NewJobsManagerImpl(nil, "", &kafkaclient.KafkaFactoryImpl{}, nil)
 	jobsHandler := jobsHandler{
 		deleteJobCh: make(chan string)}
 	managerUnderTest.allTypes["type1"] = TypeData{
@@ -196,7 +196,7 @@ func TestStartJobsManagerAddDMaaPJob_shouldStartPollAndDistributeMessages(t *tes
 	}
 	dMaaPJobsHandler := newJobsHandler(dMaaPTypeDef, "http://mrAddr", nil, pollClientMock, distributeClientMock)
 
-	jobsManager := NewJobsManagerImpl(pollClientMock, "http://mrAddr", kafkaclient.KafkaFactoryImpl{}, distributeClientMock)
+	jobsManager := NewJobsManagerImpl(pollClientMock, "http://mrAddr", &kafkaclient.KafkaFactoryImpl{}, distributeClientMock)
 	jobsManager.allTypes["type1"] = TypeData{
 		Identity:    "type1",
 		jobsHandler: dMaaPJobsHandler,
@@ -245,18 +245,14 @@ func TestStartJobsManagerAddKafkaJob_shouldStartPollAndDistributeMessages(t *tes
 		Identity:        "type2",
 		KafkaInputTopic: "topic",
 	}
-	kafkaFactoryMock := mocks.KafkaFactory{}
-	kafkaConsumerMock := mocks.KafkaConsumer{}
-	kafkaConsumerMock.On("Commit").Return([]kafka.TopicPartition{}, error(nil))
-	kafkaConsumerMock.On("Subscribe", mock.Anything).Return(error(nil))
-	kafkaConsumerMock.On("ReadMessage", mock.Anything).Return(&kafka.Message{
-		Value: []byte(kafkaMessages),
-	}, error(nil)).Once()
-	kafkaConsumerMock.On("ReadMessage", mock.Anything).Return(nil, fmt.Errorf("Just to stop"))
-	kafkaFactoryMock.On("NewKafkaConsumer", mock.Anything).Return(kafkaConsumerMock, nil)
-	kafkaJobsHandler := newJobsHandler(kafkaTypeDef, "", kafkaFactoryMock, nil, distributeClientMock)
+	kafkaFactoryMock := kafkamocks.KafkaFactory{}
+	kafkaClientMock := kafkamocks.KafkaClient{}
+	kafkaClientMock.On("ReadMessage").Return([]byte(kafkaMessages), error(nil)).Once()
+	kafkaClientMock.On("ReadMessage", mock.Anything).Return(nil, fmt.Errorf("Just to stop"))
+	kafkaFactoryMock.On("NewKafkaClient", mock.Anything).Return(&kafkaClientMock, nil)
+	kafkaJobsHandler := newJobsHandler(kafkaTypeDef, "", &kafkaFactoryMock, nil, distributeClientMock)
 
-	jobsManager := NewJobsManagerImpl(nil, "", kafkaFactoryMock, distributeClientMock)
+	jobsManager := NewJobsManagerImpl(nil, "", &kafkaFactoryMock, distributeClientMock)
 	jobsManager.allTypes["type2"] = TypeData{
 		Identity:    "type2",
 		jobsHandler: kafkaJobsHandler,
@@ -287,7 +283,7 @@ func TestJobsHandlerDeleteJob_shouldDeleteJobFromJobsMap(t *testing.T) {
 		Identity:      "type1",
 		DMaaPTopicURL: "/topicUrl",
 	}
-	jobsHandler := newJobsHandler(typeDef, "http://mrAddr", kafkaclient.KafkaFactoryImpl{}, nil, nil)
+	jobsHandler := newJobsHandler(typeDef, "http://mrAddr", &kafkaclient.KafkaFactoryImpl{}, nil, nil)
 	jobsHandler.jobs["job1"] = jobToDelete
 
 	go jobsHandler.monitorManagementChannels()
@@ -314,7 +310,7 @@ func TestJobsHandlerEmptyJobMessageBufferWhenItIsFull(t *testing.T) {
 		Identity:      "type1",
 		DMaaPTopicURL: "/topicUrl",
 	}
-	jobsHandler := newJobsHandler(typeDef, "http://mrAddr", kafkaclient.KafkaFactoryImpl{}, nil, nil)
+	jobsHandler := newJobsHandler(typeDef, "http://mrAddr", &kafkaclient.KafkaFactoryImpl{}, nil, nil)
 	jobsHandler.jobs["job1"] = job
 
 	fillMessagesBuffer(job.messagesChannel)
@@ -327,14 +323,12 @@ func TestJobsHandlerEmptyJobMessageBufferWhenItIsFull(t *testing.T) {
 func TestKafkaPollingAgentTimedOut_shouldResultInEMptyMessages(t *testing.T) {
 	assertions := require.New(t)
 
-	kafkaFactoryMock := mocks.KafkaFactory{}
-	kafkaConsumerMock := mocks.KafkaConsumer{}
-	kafkaConsumerMock.On("Commit").Return([]kafka.TopicPartition{}, error(nil))
-	kafkaConsumerMock.On("Subscribe", mock.Anything).Return(error(nil))
-	kafkaConsumerMock.On("ReadMessage", mock.Anything).Return(nil, kafka.NewError(kafka.ErrTimedOut, "", false))
-	kafkaFactoryMock.On("NewKafkaConsumer", mock.Anything).Return(kafkaConsumerMock, nil)
+	kafkaFactoryMock := kafkamocks.KafkaFactory{}
+	kafkaClientMock := kafkamocks.KafkaClient{}
+	kafkaClientMock.On("ReadMessage").Return(nil, kafka.NewError(kafka.ErrTimedOut, "", false))
+	kafkaFactoryMock.On("NewKafkaClient", mock.Anything).Return(&kafkaClientMock, nil)
 
-	pollingAgentUnderTest := newKafkaPollingAgent(kafkaFactoryMock, "")
+	pollingAgentUnderTest := newKafkaPollingAgent(&kafkaFactoryMock, "")
 	messages, err := pollingAgentUnderTest.pollMessages()
 
 	assertions.Equal([]byte(""), messages)

@@ -28,13 +28,13 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"oransc.org/nonrtric/dmaapmediatorproducer/mocks/httpclient"
+	"oransc.org/nonrtric/dmaapmediatorproducer/internal/restclient/mocks"
 )
 
 func TestRegisterTypes(t *testing.T) {
 	assertions := require.New(t)
 
-	clientMock := httpclient.HTTPClient{}
+	clientMock := mocks.HTTPClient{}
 
 	clientMock.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: http.StatusCreated,
@@ -77,7 +77,7 @@ func TestRegisterTypes(t *testing.T) {
 func TestRegisterProducer(t *testing.T) {
 	assertions := require.New(t)
 
-	clientMock := httpclient.HTTPClient{}
+	clientMock := mocks.HTTPClient{}
 
 	clientMock.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: http.StatusCreated,

@@ -37,7 +37,7 @@ import (
 const ContentTypeJSON = "application/json"
 const ContentTypePlain = "text/plain"
 
-// HTTPClient interface
+//go:generate mockery --name HTTPClient
 type HTTPClient interface {
 	Get(url string) (*http.Response, error)
 

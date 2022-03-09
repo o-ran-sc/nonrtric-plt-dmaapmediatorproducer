@@ -123,7 +123,7 @@ One, under the `consumer` folder, called `consumer` that at startup will registe
 >2. go build
 >3. ./consumer [-port \<PORT>]
 
-Mocks needed for unit tests have been generated using `github.com/stretchr/testify/mock` and are checked in under the `mocks` folder. **Note!** Keep in mind that if any of the mocked interfaces change, a new mock for that interface must be generated and checked in.
+Mocks needed for unit tests can be regenerated with the command `go generate ./...`. **Note!** Keep in mind that if any of the mocked interfaces change, a new mock for that interface must be generated and checked in.
 
 ## License
 

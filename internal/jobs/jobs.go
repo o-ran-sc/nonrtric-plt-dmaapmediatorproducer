@@ -58,6 +58,7 @@ type JobTypesManager interface {
 	GetSupportedTypes() []string
 }
 
+//go:generate mockery --name JobsManager
 type JobsManager interface {
 	AddJobFromRESTCall(JobInfo) error
 	DeleteJobFromRESTCall(jobId string)
@@ -282,7 +283,7 @@ type kafkaPollingAgent struct {
 }
 
 func newKafkaPollingAgent(kafkaFactory kafkaclient.KafkaFactory, topicID string) kafkaPollingAgent {
-	c, err := kafkaclient.NewKafkaClient(kafkaFactory, topicID)
+	c, err := kafkaFactory.NewKafkaClient(topicID)
 	if err != nil {
 		log.Fatalf("Cannot create Kafka client for topic: %v, error details: %v\n", topicID, err)
 	}

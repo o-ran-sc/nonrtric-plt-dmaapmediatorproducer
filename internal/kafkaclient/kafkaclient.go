@@ -26,15 +26,16 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
+//go:generate mockery --name KafkaFactory
 type KafkaFactory interface {
-	NewKafkaConsumer(topicID string) (KafkaConsumer, error)
+	NewKafkaClient(topicID string) (KafkaClient, error)
 }
 
 type KafkaFactoryImpl struct {
 	BootstrapServer string
 }
 
-func (kf KafkaFactoryImpl) NewKafkaConsumer(topicID string) (KafkaConsumer, error) {
+func (kf *KafkaFactoryImpl) NewKafkaClient(topicID string) (KafkaClient, error) {
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": kf.BootstrapServer,
 		"group.id":          "dmaap-mediator-producer",
@@ -43,52 +44,29 @@ func (kf KafkaFactoryImpl) NewKafkaConsumer(topicID string) (KafkaConsumer, erro
 	if err != nil {
 		return nil, err
 	}
-	return KafkaConsumerImpl{consumer: consumer}, nil
-}
-
-func NewKafkaClient(factory KafkaFactory, topicID string) (KafkaClient, error) {
-	consumer, err := factory.NewKafkaConsumer(topicID)
 	if err != nil {
-		return KafkaClient{}, err
+		return nil, err
 	}
 	consumer.Commit()
-	err = consumer.Subscribe(topicID)
+	err = consumer.Subscribe(topicID, nil)
 	if err != nil {
-		return KafkaClient{}, err
+		return nil, err
 	}
-	return KafkaClient{consumer: consumer}, nil
+	return &KafkaClientImpl{consumer: consumer}, nil
 }
 
-type KafkaClient struct {
-	consumer KafkaConsumer
+//go:generate mockery --name KafkaClient
+type KafkaClient interface {
+	ReadMessage() ([]byte, error)
+}
+type KafkaClientImpl struct {
+	consumer *kafka.Consumer
 }
 
-func (kc KafkaClient) ReadMessage() ([]byte, error) {
+func (kc *KafkaClientImpl) ReadMessage() ([]byte, error) {
 	msg, err := kc.consumer.ReadMessage(time.Second)
 	if err != nil {
 		return nil, err
 	}
 	return msg.Value, nil
-}
-
-type KafkaConsumer interface {
-	Commit() ([]kafka.TopicPartition, error)
-	Subscribe(topic string) (err error)
-	ReadMessage(timeout time.Duration) (*kafka.Message, error)
-}
-
-type KafkaConsumerImpl struct {
-	consumer *kafka.Consumer
-}
-
-func (kc KafkaConsumerImpl) Commit() ([]kafka.TopicPartition, error) {
-	return kc.consumer.Commit()
-}
-
-func (kc KafkaConsumerImpl) Subscribe(topic string) error {
-	return kc.consumer.Subscribe(topic, nil)
-}
-
-func (kc KafkaConsumerImpl) ReadMessage(timeout time.Duration) (*kafka.Message, error) {
-	return kc.consumer.ReadMessage(timeout)
 }

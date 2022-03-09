@@ -154,7 +154,7 @@ func TestRegisterTypesAndProducer(t *testing.T) {
 		t.Fail()
 		return nil
 	})
-	jobsManager := jobs.NewJobsManagerImpl(clientMock, configuration.DMaaPMRAddress, kafkaclient.KafkaFactoryImpl{}, nil)
+	jobsManager := jobs.NewJobsManagerImpl(clientMock, configuration.DMaaPMRAddress, &kafkaclient.KafkaFactoryImpl{}, nil)
 
 	wg.Add(3)
 	err := registerTypesAndProducer(jobsManager, configuration.InfoCoordinatorAddress, "callbackAddress", clientMock)

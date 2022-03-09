@@ -35,7 +35,7 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"oransc.org/nonrtric/dmaapmediatorproducer/mocks/httpclient"
+	"oransc.org/nonrtric/dmaapmediatorproducer/internal/restclient/mocks"
 )
 
 func TestRequestError_Error(t *testing.T) {
@@ -94,7 +94,7 @@ func TestGet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clientMock := httpclient.HTTPClient{}
+			clientMock := mocks.HTTPClient{}
 			clientMock.On("Get", tt.args.url).Return(&http.Response{
 				StatusCode: tt.args.mockReturnStatus,
 				Body:       ioutil.NopCloser(bytes.NewReader([]byte(tt.args.mockReturnBody))),
@@ -110,7 +110,7 @@ func TestGet(t *testing.T) {
 
 func TestPutOk(t *testing.T) {
 	assertions := require.New(t)
-	clientMock := httpclient.HTTPClient{}
+	clientMock := mocks.HTTPClient{}
 
 	clientMock.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: http.StatusOK,
@@ -136,7 +136,7 @@ func TestPutOk(t *testing.T) {
 
 func TestPostOk(t *testing.T) {
 	assertions := require.New(t)
-	clientMock := httpclient.HTTPClient{}
+	clientMock := mocks.HTTPClient{}
 
 	clientMock.On("Do", mock.Anything).Return(&http.Response{
 		StatusCode: http.StatusOK,
@@ -197,7 +197,7 @@ func Test_doErrorCases(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clientMock := httpclient.HTTPClient{}
+			clientMock := mocks.HTTPClient{}
 			clientMock.On("Do", mock.Anything).Return(&http.Response{
 				StatusCode: tt.args.mockReturnStatus,
 				Body:       ioutil.NopCloser(bytes.NewReader(tt.args.mockReturnBody)),

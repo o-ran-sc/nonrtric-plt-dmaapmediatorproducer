@@ -72,7 +72,7 @@ func main() {
 	kafkaFactory := kafkaclient.KafkaFactoryImpl{BootstrapServer: configuration.KafkaBootstrapServers}
 	distributionClient := restclient.CreateClientWithoutRetry(cert, 10*time.Second)
 
-	jobsManager := jobs.NewJobsManagerImpl(retryClient, configuration.DMaaPMRAddress, kafkaFactory, distributionClient)
+	jobsManager := jobs.NewJobsManagerImpl(retryClient, configuration.DMaaPMRAddress, &kafkaFactory, distributionClient)
 	go startCallbackServer(jobsManager, callbackAddress)
 
 	if err := registerTypesAndProducer(jobsManager, configuration.InfoCoordinatorAddress, callbackAddress, retryClient); err != nil {

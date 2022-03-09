@@ -34,7 +34,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"oransc.org/nonrtric/dmaapmediatorproducer/internal/jobs"
-	"oransc.org/nonrtric/dmaapmediatorproducer/mocks/jobshandler"
+	"oransc.org/nonrtric/dmaapmediatorproducer/internal/jobs/mocks"
 )
 
 func TestNewRouter(t *testing.T) {
@@ -132,10 +132,10 @@ func TestAddInfoJobToJobsHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			jobsHandlerMock := jobshandler.JobsHandler{}
-			jobsHandlerMock.On("AddJobFromRESTCall", tt.args.job).Return(tt.args.mockReturn)
+			jobsManagerMock := mocks.JobsManager{}
+			jobsManagerMock.On("AddJobFromRESTCall", tt.args.job).Return(tt.args.mockReturn)
 
-			callbackHandlerUnderTest := NewProducerCallbackHandler(&jobsHandlerMock)
+			callbackHandlerUnderTest := NewProducerCallbackHandler(&jobsManagerMock)
 
 			handler := http.HandlerFunc(callbackHandlerUnderTest.addInfoJobHandler)
 			responseRecorder := httptest.NewRecorder()
@@ -154,17 +154,17 @@ func TestAddInfoJobToJobsHandler(t *testing.T) {
 				assertions.Equal(*tt.wantedErrorInfo, actualErrInfo, tt.name)
 				assertions.Equal("application/problem+json", responseRecorder.Result().Header.Get("Content-Type"))
 			}
-			jobsHandlerMock.AssertCalled(t, "AddJobFromRESTCall", tt.args.job)
+			jobsManagerMock.AssertCalled(t, "AddJobFromRESTCall", tt.args.job)
 		})
 	}
 }
 
 func TestDeleteJob(t *testing.T) {
 	assertions := require.New(t)
-	jobsHandlerMock := jobshandler.JobsHandler{}
-	jobsHandlerMock.On("DeleteJobFromRESTCall", mock.Anything).Return(nil)
+	jobsManagerMock := mocks.JobsManager{}
+	jobsManagerMock.On("DeleteJobFromRESTCall", mock.Anything).Return(nil)
 
-	callbackHandlerUnderTest := NewProducerCallbackHandler(&jobsHandlerMock)
+	callbackHandlerUnderTest := NewProducerCallbackHandler(&jobsManagerMock)
 
 	responseRecorder := httptest.NewRecorder()
 	r := mux.SetURLVars(newRequest(http.MethodDelete, "/jobs/", nil, t), map[string]string{"infoJobId": "job1"})
@@ -174,7 +174,7 @@ func TestDeleteJob(t *testing.T) {
 
 	assertions.Equal("", responseRecorder.Body.String())
 
-	jobsHandlerMock.AssertCalled(t, "DeleteJobFromRESTCall", "job1")
+	jobsManagerMock.AssertCalled(t, "DeleteJobFromRESTCall", "job1")
 }
 
 func TestSetLogLevel(t *testing.T) {
