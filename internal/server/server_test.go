@@ -175,6 +175,13 @@ func TestDeleteJob(t *testing.T) {
 	assertions.Equal("", responseRecorder.Body.String())
 
 	jobsManagerMock.AssertCalled(t, "DeleteJobFromRESTCall", "job1")
+
+	// No job ID provided, should return bad request with info
+	responseRecorder = httptest.NewRecorder()
+	r = newRequest(http.MethodDelete, "/jobs/", nil, t)
+	handler.ServeHTTP(responseRecorder, r)
+	assertions.Equal(http.StatusBadRequest, responseRecorder.Result().StatusCode)
+	assertions.Contains(responseRecorder.Body.String(), "Must provide infoJobId")
 }
 
 func TestSetLogLevel(t *testing.T) {

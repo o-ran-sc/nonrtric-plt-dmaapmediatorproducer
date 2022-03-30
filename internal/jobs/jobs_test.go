@@ -25,12 +25,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"oransc.org/nonrtric/dmaapmediatorproducer/internal/config"
@@ -419,6 +421,52 @@ func TestJobWithBufferedParameters_shouldSendMessagesTogether(t *testing.T) {
 		t.Error("Not all calls to server were made")
 		t.Fail()
 	}
+}
+
+func TestJobStop_shouldLogStop(t *testing.T) {
+	log.SetLevel(log.DebugLevel)
+	assertions := require.New(t)
+
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	defer func() {
+		log.SetOutput(os.Stderr)
+	}()
+
+	// Single message reading
+	jobUnderTest := newJob(JobInfo{InfoJobIdentity: "job1"}, nil)
+	go jobUnderTest.start()
+
+	go func() {
+		jobUnderTest.controlChannel <- struct{}{}
+	}()
+
+	time.Sleep(10 * time.Millisecond)
+
+	logString := buf.String()
+	assertions.Contains(logString, "Stop distribution for job: job1")
+
+	// Buffered message reading
+	jobUnderTest = newJob(JobInfo{
+		InfoJobIdentity: "job2",
+		TargetUri:       "http://consumerHost/target",
+		InfoJobData: Parameters{
+			BufferTimeout: BufferTimeout{
+				MaxSize:            5,
+				MaxTimeMiliseconds: 200,
+			},
+		},
+	}, nil)
+	go jobUnderTest.start()
+
+	go func() {
+		jobUnderTest.controlChannel <- struct{}{}
+	}()
+
+	time.Sleep(10 * time.Millisecond)
+
+	logString = buf.String()
+	assertions.Contains(logString, "Stop distribution for job: job2")
 }
 
 func TestJobReadMoreThanBufferSizeMessages_shouldOnlyReturnMaxSizeNoOfMessages(t *testing.T) {

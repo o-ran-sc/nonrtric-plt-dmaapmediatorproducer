@@ -109,7 +109,7 @@ func (h *ProducerCallbackHandler) deleteInfoJobHandler(w http.ResponseWriter, r 
 	vars := mux.Vars(r)
 	id, ok := vars[jobIdToken]
 	if !ok {
-		http.Error(w, "Must provide infoJobId.", http.StatusBadRequest)
+		returnError("Must provide infoJobId.", w)
 		return
 	}
 
