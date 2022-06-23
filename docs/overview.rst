@@ -10,3 +10,5 @@ Configurable mediator to take information from DMaaP and Kafka and present it as
 This mediator is a generic information producer, which register itself as an information producer of defined information types in Information Coordination Service (ICS).
 The information types are defined in a configuration file.
 Information jobs defined using ICS then allow information consumers to retrieve data from DMaaP MR or Kafka topics (accessing the ICS API).
+
+This product is a part of :doc:`NONRTRIC <nonrtric:index>`.
