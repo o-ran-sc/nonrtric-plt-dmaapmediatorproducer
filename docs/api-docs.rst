@@ -15,7 +15,7 @@
 API-Docs
 ========
 
-Here we describe the APIs to access the Non-RT RIC DMaaP Mediator Producer.
+Here we describe the API to access the Non-RT RIC DMaaP Mediator Producer.
 
 
 DMaaP Mediator Producer
