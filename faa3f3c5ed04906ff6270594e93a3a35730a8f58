@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53b4fc17_b3db52ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000103
+      },
+      "writtenOn": "2022-08-22T15:24:12Z",
+      "side": 1,
+      "message": "The license will disappear again in the .go files .. but that is no harm I guess. ",
+      "revId": "faa3f3c5ed04906ff6270594e93a3a35730a8f58",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
