@@ -99,13 +99,13 @@ func TestValidateConfiguration(t *testing.T) {
 	}
 	assertions.Nil(validateConfiguration(&missingKafkaServers))
 
-	missingMRAddressdAndKafkaServers := config.Config{
+	missingMRAddressAndKafkaServers := config.Config{
 		InfoProducerHost: "host",
 		ProducerCertPath: "path",
 		ProducerKeyPath:  "path",
 	}
-	assertions.Contains(validateConfiguration(&missingMRAddressdAndKafkaServers).Error(), "DMAAP_MR_ADDR")
-	assertions.Contains(validateConfiguration(&missingMRAddressdAndKafkaServers).Error(), "KAFKA_BOOTSRAP_SERVERS")
+	assertions.Contains(validateConfiguration(&missingMRAddressAndKafkaServers).Error(), "DMAAP_MR_ADDR")
+	assertions.Contains(validateConfiguration(&missingMRAddressAndKafkaServers).Error(), "KAFKA_BOOTSTRAP_SERVERS")
 }
 
 func TestRegisterTypesAndProducer(t *testing.T) {
@@ -173,7 +173,7 @@ func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req), nil
 }
 
-//NewTestClient returns *http.Client with Transport replaced to avoid making real calls
+// NewTestClient returns *http.Client with Transport replaced to avoid making real calls
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
 		Transport: RoundTripFunc(fn),

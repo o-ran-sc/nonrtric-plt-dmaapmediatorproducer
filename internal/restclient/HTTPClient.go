@@ -113,7 +113,7 @@ func CreateClientCertificate(certPath string, keyPath string) (tls.Certificate, 
 	if cert, err := tls.LoadX509KeyPair(certPath, keyPath); err == nil {
 		return cert, nil
 	} else {
-		return tls.Certificate{}, fmt.Errorf("cannot create x509 keypair from cert file %s and key file %s due to: %v", certPath, keyPath, err)
+		return tls.Certificate{}, fmt.Errorf("cannot create x509 key pair from cert file %s and key file %s due to: %v", certPath, keyPath, err)
 	}
 }
 

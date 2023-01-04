@@ -8,14 +8,14 @@
         "maxSize": {
           "type": "integer"
         },
-        "maxTimeMiliseconds": {
+        "maxTimeMilliseconds": {
           "type": "integer"
         }
       },
       "additionalProperties": false,
       "required": [
         "maxSize",
-        "maxTimeMiliseconds"
+        "maxTimeMilliseconds"
       ]
     }
   },

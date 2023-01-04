@@ -25,9 +25,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	_ "oransc.org/nonrtric/dmaapmediatorproducer/api"
 	"oransc.org/nonrtric/dmaapmediatorproducer/internal/config"
@@ -46,11 +46,10 @@ func init() {
 	configuration = config.New()
 }
 
-// @title    DMaaP Mediator Producer
-// @version  1.1.0
+//	@title	DMaaP Mediator Producer
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
 	log.SetLevel(configuration.LogLevel)
@@ -94,7 +93,7 @@ func validateConfiguration(configuration *config.Config) error {
 		return fmt.Errorf("missing PRODUCER_CERT and/or PRODUCER_KEY")
 	}
 	if configuration.DMaaPMRAddress == "" && configuration.KafkaBootstrapServers == "" {
-		return fmt.Errorf("at least one of DMAAP_MR_ADDR or KAFKA_BOOTSRAP_SERVERS must be provided")
+		return fmt.Errorf("at least one of DMAAP_MR_ADDR or KAFKA_BOOTSTRAP_SERVERS must be provided")
 	}
 	return nil
 }
@@ -122,8 +121,7 @@ func registerTypesAndProducer(jobTypesManager jobs.JobTypesManager, infoCoordina
 
 func startCallbackServer(jobsManager jobs.JobsManager, callbackAddress string) {
 	log.Debugf("Starting callback server at port %v", configuration.InfoProducerPort)
-	r := server.NewRouter(jobsManager, statusHandler)
-	addSwaggerHandler(r)
+	r := server.NewRouter(jobsManager, statusHandler, getSwaggerHandler())
 	if restclient.IsUrlSecure(callbackAddress) {
 		log.Fatalf("Server stopped: %v", http.ListenAndServeTLS(fmt.Sprintf(":%v", configuration.InfoProducerPort), configuration.ProducerCertPath, configuration.ProducerKeyPath, r))
 	} else {
@@ -131,19 +129,18 @@ func startCallbackServer(jobsManager jobs.JobsManager, callbackAddress string) {
 	}
 }
 
-type ProducerStatus struct {
+type ServiceStatus struct {
 	// The registration status of the producer in Information Coordinator Service. Either `registered` or `not registered`
 	RegisteredStatus string `json:"registeredStatus" swaggertype:"string" example:"registered"`
-} // @name  ProducerStatus
+}
 
-// @Summary      Get status
-// @Description  Get the status of the producer. Will show if the producer has registered in ICS.
-// @Tags         Data producer (callbacks)
-// @Produce      json
-// @Success      200  {object}  ProducerStatus
-// @Router       /health_check [get]
+//	@Summary		Get status
+//	@Description	Get the status of the producer. Will show if the producer has registered in ICS.
+//	@Tags			Data producer (callbacks)
+//	@Success		200	{object}	ServiceStatus	"The status of the service"
+//	@Router			/health_check [get]
 func statusHandler(w http.ResponseWriter, r *http.Request) {
-	status := ProducerStatus{
+	status := ServiceStatus{
 		RegisteredStatus: "not registered",
 	}
 	if registered {
@@ -152,13 +149,18 @@ func statusHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(status)
 }
 
-// @Summary      Get Swagger Documentation
-// @Description  Get the Swagger API documentation for the producer.
-// @Tags         Admin
-// @Success      200
-// @Router       /swagger [get]
-func addSwaggerHandler(r *mux.Router) {
-	r.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+//	@Summary		Get Swagger Documentation
+//	@Description	Get the Swagger API documentation for the producer.
+//	@Tags			Admin
+//	@Success		200
+//	@Router			/swagger/doc.json [get]
+func getSwaggerHandler() http.HandlerFunc {
+	return httpSwagger.Handler(
+		httpSwagger.URL(configuration.InfoProducerHost+":"+strconv.Itoa(configuration.InfoProducerPort)+"/swagger/*"), //The url pointing to API definition
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("none"),
+		httpSwagger.DomID("#swagger-ui"),
+	)
 }
 
 func keepProducerAlive() {
