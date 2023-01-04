@@ -158,16 +158,16 @@ func CreateTypeConfigFiles(t *testing.T) string {
 	if err != nil {
 		t.Errorf("Unable to create temporary directory for types due to: %v", err)
 	}
-	fname := filepath.Join(typesDir, "type_config.json")
-	if err = os.WriteFile(fname, []byte(typeDefinition), 0666); err != nil {
+	fName := filepath.Join(typesDir, "type_config.json")
+	if err = os.WriteFile(fName, []byte(typeDefinition), 0666); err != nil {
 		t.Errorf("Unable to create temporary config file for types due to: %v", err)
 	}
-	fname = filepath.Join(typesDir, "typeSchemaDmaap.json")
-	if err = os.WriteFile(fname, []byte(typeSchemaFileContent), 0666); err != nil {
+	fName = filepath.Join(typesDir, "typeSchemaDmaap.json")
+	if err = os.WriteFile(fName, []byte(typeSchemaFileContent), 0666); err != nil {
 		t.Errorf("Unable to create temporary schema file for DMaaP type due to: %v", err)
 	}
-	fname = filepath.Join(typesDir, "typeSchemaKafka.json")
-	if err = os.WriteFile(fname, []byte(typeSchemaFileContent), 0666); err != nil {
+	fName = filepath.Join(typesDir, "typeSchemaKafka.json")
+	if err = os.WriteFile(fName, []byte(typeSchemaFileContent), 0666); err != nil {
 		t.Errorf("Unable to create temporary schema file for Kafka type due to: %v", err)
 	}
 	return typesDir

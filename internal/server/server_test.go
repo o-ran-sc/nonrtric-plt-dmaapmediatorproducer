@@ -25,7 +25,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -40,7 +39,7 @@ import (
 func TestNewRouter(t *testing.T) {
 	assertions := require.New(t)
 
-	r := NewRouter(nil, nil)
+	r := NewRouter(nil, nil, nil)
 	statusRoute := r.Get("health_check")
 	assertions.NotNil(statusRoute)
 	supportedMethods, err := statusRoute.GetMethods()
@@ -244,7 +243,7 @@ func newRequest(method string, url string, jobInfo *jobs.JobInfo, t *testing.T) 
 	var body io.Reader
 	if jobInfo != nil {
 		bodyAsBytes, _ := json.Marshal(jobInfo)
-		body = ioutil.NopCloser(bytes.NewReader(bodyAsBytes))
+		body = io.NopCloser(bytes.NewReader(bodyAsBytes))
 	}
 	if req, err := http.NewRequest(method, url, body); err == nil {
 		return req

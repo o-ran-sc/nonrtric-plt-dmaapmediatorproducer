@@ -5,7 +5,8 @@
 Developer Guide
 ===============
 
-This document provides a quick start for developers of the Non-RT RIC DMaaP Mediator Producer.
+This document provides a quick start for developers of the Non-RT RIC DMaaP
+Mediator Producer.
 
 Additional developer guides are available on the `O-RAN SC NONRTRIC Developer wiki <https://wiki.o-ran-sc.org/display/RICNR/Release+F>`_.
 
@@ -15,8 +16,9 @@ Kubernetes deployment
 =====================
 
 Non-RT RIC can be also deployed in a Kubernetes cluster, `it/dep repository <https://gerrit.o-ran-sc.org/r/admin/repos/it/dep>`_.
-hosts deployment and integration artifacts. Instructions and helm charts to deploy the Non-RT-RIC functions in the
-OSC NONRTRIC integrated test environment can be found in the *./nonrtric* directory.
+hosts deployment and integration artifacts. Instructions and helm charts to
+deploy the Non-RT-RIC functions in the OSC NONRTRIC integrated test environment
+can be found in the *./nonrtric* directory.
 
 For more information on installation of NonRT-RIC in Kubernetes, see `Deploy NONRTRIC in Kubernetes <https://wiki.o-ran-sc.org/display/RICNR/Deploy+NONRTRIC+in+Kubernetes>`_.
 

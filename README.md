@@ -16,7 +16,7 @@ The producer takes a number of environment variables, described below, as config
 
 Any of the addresses used by this product can be configured to use https, by specifying it as the scheme of the address URI. Clients configured to use https will not use server certificate verification. The communication towards the consumers will use https if their callback address URI uses that scheme. The producer's own callback will only listen to the scheme configured in the scheme of the info producer host address.
 
-The configured public key and cerificate shall be PEM-encoded. A self signed certificate and key are provided in the `security` folder of the project. These files should be replaced for production. To generate a self signed key and certificate, use the example code below:
+The configured public key and certificate shall be PEM-encoded. A self signed certificate and key are provided in the `security` folder of the project. These files should be replaced for production. To generate a self signed key and certificate, use the example code below:
 
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
 
@@ -37,15 +37,16 @@ The file `configs/type_config.json` contains the configuration of job types that
     }
 
 Each information type has the following properties:
- - id the information type identity as exposed in the Information Coordination Service data consumer API
- - dmaapTopicUrl the URL to for fetching information from  DMaaP
- - kafkaInputTopic the Kafka topic to get input from
+
+- id the information type identity as exposed in the Information Coordination Service data consumer API
+- dmaapTopicUrl the URL to for fetching information from  DMaaP
+- kafkaInputTopic the Kafka topic to get input from
 
 Either the "dmaapTopicUrl" or the "kafkaInputTopic" must be provided for each type, not both.
 
 ## Functionality
 
-At start up the producer will register the configured job types in ICS and also register itself as a producer supporting these types. If ICS is unavailable, the producer will retry to connect indefinetely. The same goes for MR.
+At start up the producer will register the configured job types in ICS and also register itself as a producer supporting these types. If ICS is unavailable, the producer will retry to connect indefinitely. The same goes for MR.
 
 Once the initial registration is done, the producer will constantly poll MR and/or Kafka for all configured job types. When receiving messages for a type, it will distribute these messages to all jobs registered for the type. If no jobs for that type are registered, the messages will be discarded. If a consumer is unavailable for distribution, the messages will be discarded for that consumer until it is available again.
 
@@ -56,7 +57,6 @@ The producer provides a REST API that fulfills the ICS Data producer API, see [D
 The Swagger documentation of the producer's API is also available, through the `/swagger` path.
 
 When an Information Job is created in the Information Coordinator Service Consumer API, it is possible to define a number of job specific properties. For an Information type that has a Kafka topic defined, the following Json schema defines the properties that can be used:
-
 
 ```sh
 {
@@ -69,29 +69,33 @@ When an Information Job is created in the Information Coordinator Service Consum
         "maxSize": {
           "type": "integer"
         },
-        "maxTimeMiliseconds": {
+        "maxTimeMilliseconds": {
           "type": "integer"
         }
       },
       "additionalProperties": false,
       "required": [
         "maxSize",
-        "maxTimeMiliseconds"
+        "maxTimeMilliseconds"
       ]
     }
   },
   "additionalProperties": false
 }
 ```
+
 -bufferTimeout, can be used to reduce the number of REST calls to the consumer. If defined, a number of objects will be
  buffered and sent in one REST call to the consumer.
  The buffered objects will be put in a Json array and quoted. Example;
-   Object1 and Object2 may be posted in one call -->  ["Object1", "Object2"]
- The bufferTimeout is a Json object and the parameters in the object are:
-   - maxSize the maximum number of buffered objects before posting
-   - maxTimeMiliseconds the maximum delay time to buffer before posting
- If no bufferTimeout is specified, each object will be posted as received in separate calls (not quoted and put in a Json array).
 
+    Object1 and Object2 may be posted in one call -->  ["Object1", "Object2"]
+
+The bufferTimeout is a Json object and the parameters in the object are:
+
+- maxSize, the maximum number of buffered objects before posting
+- maxTimeMilliseconds, the maximum delay time to buffer before posting
+
+If no bufferTimeout is specified, each object will be posted as received in separate calls (not quoted and put in a Json array).
 
 For an information type that only has a DMaaP topic, the following Json schema is used:
 
@@ -103,22 +107,26 @@ For an information type that only has a DMaaP topic, the following Json schema i
   },
   "additionalProperties": false
 }
+```
 
 ## Development
 
 To make it easy to test during development of the producer, three stubs are provided in the `stub` folder.
 
 One, under the `dmaap` folder, called `dmaap` that stubs MR and respond with an array with one message with `eventSeverity` alternating between `NORMAL` and `CRITICAL`. The default port is `3905`, but this can be overridden by passing a `-port <PORT>` flag when starting the stub. To build and start the stub, do the following:
+
 >1. cd stub/dmaap
 >2. go build
 >3. ./dmaap [-port \<PORT>]
 
 An ICS stub, under the `ics` folder, that listens for registration calls from the producer. When it gets a call it prints out the data of the call. By default, it listens to the port `8434`, but his can be overridden by passing a `-port [PORT]` flag when starting the stub. To build and start the stub, do the following:
+
 >1. cd stub/ics
 >2. go build [-port \<PORT>]
 >3. ./ics
 
 One, under the `consumer` folder, called `consumer` that at startup will register a job of type `STD_Fault_Messages` in ICS, if it is available, and then listen for REST calls and print the body of them. By default, it listens to the port `40935`, but his can be overridden by passing a `-port <PORT>` flag when starting the stub. To build and start the stub, do the following:
+
 >1. cd stub/consumer
 >2. go build
 >3. ./consumer [-port \<PORT>]

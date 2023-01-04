@@ -7,7 +7,8 @@ Release-Notes
 =============
 
 
-This document provides the release notes for the Non-RT RIC DMaaP Mediator Producer.
+This document provides the release notes for the Non-RT RIC DMaaP Mediator
+Producer.
 
 Version history DMaaP Mediator Producer
 =======================================
