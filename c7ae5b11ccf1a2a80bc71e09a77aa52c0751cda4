@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "addc84f7_5559ab4c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000103
+      },
+      "writtenOn": "2023-02-10T13:25:23Z",
+      "side": 1,
+      "message": "Squashed cherrypicks from master",
+      "revId": "c7ae5b11ccf1a2a80bc71e09a77aa52c0751cda4",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
