@@ -21,7 +21,8 @@ Here we describe the API to access the Non-RT RIC DMaaP Mediator Producer.
 DMaaP Mediator Producer
 =======================
 
-The DMaaP Mediator Producer provides support for push delivery of any data received from DMaaP or Kafka.
+The DMaaP Mediator Producer provides support for push delivery of any data
+received from DMaaP or Kafka.
 
 See `DMaaP Mediator Producer API <./dmaap-mediator-producer-api.html>`_ for full details of the API.
 

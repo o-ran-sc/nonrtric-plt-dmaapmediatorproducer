@@ -6,8 +6,7 @@
         "license": {
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.1.0"
+        }
     },
     "paths": {
         "/admin/log": {
@@ -33,12 +32,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Problem as defined in https://tools.ietf.org/html/rfc7807",
                         "schema": {
-                            "$ref": "#/definitions/ErrorInfo"
+                            "$ref": "#/definitions/server.ErrorInfo"
                         },
                         "headers": {
                             "Content-Type": {
@@ -53,18 +52,15 @@
         "/health_check": {
             "get": {
                 "description": "Get the status of the producer. Will show if the producer has registered in ICS.",
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "Data producer (callbacks)"
                 ],
                 "summary": "Get status",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "The status of the service",
                         "schema": {
-                            "$ref": "#/definitions/"
+                            "$ref": "#/definitions/main.ServiceStatus"
                         }
                     }
                 }
@@ -87,18 +83,18 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/JobInfo"
+                            "$ref": "#/definitions/jobs.JobInfo"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Problem as defined in https://tools.ietf.org/html/rfc7807",
                         "schema": {
-                            "$ref": "#/definitions/ErrorInfo"
+                            "$ref": "#/definitions/server.ErrorInfo"
                         },
                         "headers": {
                             "Content-Type": {
@@ -128,12 +124,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
         },
-        "/swagger": {
+        "/swagger/doc.json": {
             "get": {
                 "description": "Get the Swagger API documentation for the producer.",
                 "tags": [
@@ -142,14 +138,58 @@
                 "summary": "Get Swagger Documentation",
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     }
                 }
             }
         }
     },
     "definitions": {
-        "": {
+        "jobs.BufferTimeout": {
+            "type": "object",
+            "properties": {
+                "maxSize": {
+                    "description": "The maximum number of messages to buffer before sending to consumer.",
+                    "type": "integer"
+                },
+                "maxTimeMilliseconds": {
+                    "description": "The maximum time to wait before sending to consumer if the MaxSize has not been reached.",
+                    "type": "integer"
+                }
+            }
+        },
+        "jobs.JobInfo": {
+            "type": "object",
+            "properties": {
+                "info_job_data": {
+                    "$ref": "#/definitions/jobs.Parameters"
+                },
+                "info_job_identity": {
+                    "type": "string"
+                },
+                "info_type_identity": {
+                    "type": "string"
+                },
+                "last_updated": {
+                    "type": "string"
+                },
+                "owner": {
+                    "type": "string"
+                },
+                "target_uri": {
+                    "type": "string"
+                }
+            }
+        },
+        "jobs.Parameters": {
+            "type": "object",
+            "properties": {
+                "bufferTimeout": {
+                    "$ref": "#/definitions/jobs.BufferTimeout"
+                }
+            }
+        },
+        "main.ServiceStatus": {
             "type": "object",
             "properties": {
                 "registeredStatus": {
@@ -159,18 +199,7 @@
                 }
             }
         },
-        "BufferTimeout": {
-            "type": "object",
-            "properties": {
-                "maxSize": {
-                    "type": "integer"
-                },
-                "maxTimeMiliseconds": {
-                    "type": "integer"
-                }
-            }
-        },
-        "ErrorInfo": {
+        "server.ErrorInfo": {
             "type": "object",
             "properties": {
                 "detail": {
@@ -194,37 +223,6 @@
                 "type": {
                     "description": "A URI reference that identifies the problem type.",
                     "type": "string"
-                }
-            }
-        },
-        "JobInfo": {
-            "type": "object",
-            "properties": {
-                "info_job_data": {
-                    "$ref": "#/definitions/Parameters"
-                },
-                "info_job_identity": {
-                    "type": "string"
-                },
-                "info_type_identity": {
-                    "type": "string"
-                },
-                "last_updated": {
-                    "type": "string"
-                },
-                "owner": {
-                    "type": "string"
-                },
-                "target_uri": {
-                    "type": "string"
-                }
-            }
-        },
-        "Parameters": {
-            "type": "object",
-            "properties": {
-                "bufferTimeout": {
-                    "$ref": "#/definitions/BufferTimeout"
                 }
             }
         }

@@ -51,7 +51,7 @@ type JobInfo struct {
 	InfoJobData      Parameters `json:"info_job_data"`
 	InfoTypeIdentity string     `json:"info_type_identity"`
 	sourceType       sourceType
-} // @name JobInfo
+} //	@name	JobInfo
 
 type JobTypesManager interface {
 	LoadTypesFromConfiguration(types []config.TypeDefinition) []config.TypeDefinition
@@ -199,7 +199,7 @@ func (jh *jobsHandler) pollAndDistributeMessages() {
 }
 
 func (jh *jobsHandler) distributeMessages(messages []byte) {
-	if string(messages) != "[]" && len(messages) > 0 { // MR returns an ampty array if there are no messages.
+	if string(messages) != "[]" && len(messages) > 0 { // MR returns an empty array if there are no messages.
 		log.Debug("Distributing messages: ", string(messages))
 		jh.mu.Lock()
 		defer jh.mu.Unlock()
@@ -328,12 +328,15 @@ func newJob(j JobInfo, c restclient.HTTPClient) job {
 
 type Parameters struct {
 	BufferTimeout BufferTimeout `json:"bufferTimeout"`
-} // @name Parameters
+} //	@name	Parameters
 
+// Parameters for buffering messages.
 type BufferTimeout struct {
-	MaxSize            int   `json:"maxSize"`
-	MaxTimeMiliseconds int64 `json:"maxTimeMiliseconds"`
-} // @name BufferTimeout
+	// The maximum number of messages to buffer before sending to consumer.
+	MaxSize int `json:"maxSize"`
+	// The maximum time to wait before sending to consumer if the MaxSize has not been reached.
+	MaxTimeMilliseconds int64 `json:"maxTimeMilliseconds"`
+} //	@name	BufferTimeout
 
 func (j *job) start() {
 	if j.isJobBuffered() {
@@ -394,7 +397,7 @@ func (j *job) read(bufferParams BufferTimeout) []byte {
 			}
 		}
 	}()
-	j.waitTimeout(&wg, time.Duration(bufferParams.MaxTimeMiliseconds)*time.Millisecond)
+	j.waitTimeout(&wg, time.Duration(bufferParams.MaxTimeMilliseconds)*time.Millisecond)
 	close(c)
 	return getAsJSONArray(rawMsgs)
 }
@@ -454,7 +457,7 @@ func (j *job) sendMessagesToConsumer(messages []byte) {
 }
 
 func (j *job) isJobBuffered() bool {
-	return j.jobInfo.InfoJobData.BufferTimeout.MaxSize > 0 && j.jobInfo.InfoJobData.BufferTimeout.MaxTimeMiliseconds > 0
+	return j.jobInfo.InfoJobData.BufferTimeout.MaxSize > 0 && j.jobInfo.InfoJobData.BufferTimeout.MaxTimeMilliseconds > 0
 }
 
 func (j *job) isJobKafka() bool {

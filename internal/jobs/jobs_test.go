@@ -402,8 +402,8 @@ func TestJobWithBufferedParameters_shouldSendMessagesTogether(t *testing.T) {
 		TargetUri: "http://consumerHost/target",
 		InfoJobData: Parameters{
 			BufferTimeout: BufferTimeout{
-				MaxSize:            5,
-				MaxTimeMiliseconds: 200,
+				MaxSize:             5,
+				MaxTimeMilliseconds: 200,
 			},
 		},
 	}, distributeClientMock)
@@ -452,8 +452,8 @@ func TestJobStop_shouldLogStop(t *testing.T) {
 		TargetUri:       "http://consumerHost/target",
 		InfoJobData: Parameters{
 			BufferTimeout: BufferTimeout{
-				MaxSize:            5,
-				MaxTimeMiliseconds: 200,
+				MaxSize:             5,
+				MaxTimeMilliseconds: 200,
 			},
 		},
 	}, nil)
@@ -481,8 +481,8 @@ func TestJobReadMoreThanBufferSizeMessages_shouldOnlyReturnMaxSizeNoOfMessages(t
 	}()
 
 	msgs := jobUnderTest.read(BufferTimeout{
-		MaxSize:            2,
-		MaxTimeMiliseconds: 200,
+		MaxSize:             2,
+		MaxTimeMilliseconds: 200,
 	})
 
 	assertions.Equal([]byte("[\"0\",\"1\"]"), msgs)
@@ -500,8 +500,8 @@ func TestJobReadBufferedWhenTimeout_shouldOnlyReturnMessagesSentBeforeTimeout(t 
 	}()
 
 	msgs := jobUnderTest.read(BufferTimeout{
-		MaxSize:            2,
-		MaxTimeMiliseconds: 30,
+		MaxSize:             2,
+		MaxTimeMilliseconds: 30,
 	})
 
 	assertions.Equal([]byte("[\"0\",\"1\"]"), msgs)
@@ -519,7 +519,7 @@ func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req), nil
 }
 
-//NewTestClient returns *http.Client with Transport replaced to avoid making real calls
+// NewTestClient returns *http.Client with Transport replaced to avoid making real calls
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
 		Transport: RoundTripFunc(fn),

@@ -1,5 +1,35 @@
 definitions:
-  "":
+  jobs.BufferTimeout:
+    properties:
+      maxSize:
+        description: The maximum number of messages to buffer before sending to consumer.
+        type: integer
+      maxTimeMilliseconds:
+        description: The maximum time to wait before sending to consumer if the MaxSize
+          has not been reached.
+        type: integer
+    type: object
+  jobs.JobInfo:
+    properties:
+      info_job_data:
+        $ref: '#/definitions/jobs.Parameters'
+      info_job_identity:
+        type: string
+      info_type_identity:
+        type: string
+      last_updated:
+        type: string
+      owner:
+        type: string
+      target_uri:
+        type: string
+    type: object
+  jobs.Parameters:
+    properties:
+      bufferTimeout:
+        $ref: '#/definitions/jobs.BufferTimeout'
+    type: object
+  main.ServiceStatus:
     properties:
       registeredStatus:
         description: The registration status of the producer in Information Coordinator
@@ -7,14 +37,7 @@ definitions:
         example: registered
         type: string
     type: object
-  BufferTimeout:
-    properties:
-      maxSize:
-        type: integer
-      maxTimeMiliseconds:
-        type: integer
-    type: object
-  ErrorInfo:
+  server.ErrorInfo:
     properties:
       detail:
         description: A human-readable explanation specific to this occurrence of the
@@ -37,33 +60,12 @@ definitions:
         description: A URI reference that identifies the problem type.
         type: string
     type: object
-  JobInfo:
-    properties:
-      info_job_data:
-        $ref: '#/definitions/Parameters'
-      info_job_identity:
-        type: string
-      info_type_identity:
-        type: string
-      last_updated:
-        type: string
-      owner:
-        type: string
-      target_uri:
-        type: string
-    type: object
-  Parameters:
-    properties:
-      bufferTimeout:
-        $ref: '#/definitions/BufferTimeout'
-    type: object
 info:
   contact: {}
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: DMaaP Mediator Producer
-  version: 1.1.0
 paths:
   /admin/log:
     put:
@@ -80,7 +82,7 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Problem as defined in https://tools.ietf.org/html/rfc7807
           headers:
@@ -88,7 +90,7 @@ paths:
               description: application/problem+json
               type: string
           schema:
-            $ref: '#/definitions/ErrorInfo'
+            $ref: '#/definitions/server.ErrorInfo'
       summary: Set log level
       tags:
       - Admin
@@ -96,13 +98,11 @@ paths:
     get:
       description: Get the status of the producer. Will show if the producer has registered
         in ICS.
-      produces:
-      - application/json
       responses:
         "200":
-          description: OK
+          description: The status of the service
           schema:
-            $ref: '#/definitions/'
+            $ref: '#/definitions/main.ServiceStatus'
       summary: Get status
       tags:
       - Data producer (callbacks)
@@ -117,10 +117,10 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/JobInfo'
+          $ref: '#/definitions/jobs.JobInfo'
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Problem as defined in https://tools.ietf.org/html/rfc7807
           headers:
@@ -128,7 +128,7 @@ paths:
               description: application/problem+json
               type: string
           schema:
-            $ref: '#/definitions/ErrorInfo'
+            $ref: '#/definitions/server.ErrorInfo'
       summary: Add info job
       tags:
       - Data producer (callbacks)
@@ -143,16 +143,16 @@ paths:
         type: string
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Delete info job
       tags:
       - Data producer (callbacks)
-  /swagger:
+  /swagger/doc.json:
     get:
       description: Get the Swagger API documentation for the producer.
       responses:
         "200":
-          description: ""
+          description: OK
       summary: Get Swagger Documentation
       tags:
       - Admin

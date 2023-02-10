@@ -38,6 +38,7 @@ const deleteJobPath = AddJobPath + "/{" + jobIdToken + "}"
 const logLevelToken = "level"
 const logAdminPath = "/admin/log"
 
+// Information about the current error.
 type ErrorInfo struct {
 	// A URI reference that identifies the problem type.
 	Type string `json:"type" swaggertype:"string"`
@@ -49,7 +50,7 @@ type ErrorInfo struct {
 	Detail string `json:"detail" swaggertype:"string" example:"Info job type not found"`
 	// A URI reference that identifies the specific occurrence of the problem.
 	Instance string `json:"instance" swaggertype:"string"`
-} // @name ErrorInfo
+} //	@name	ErrorInfo
 
 type ProducerCallbackHandler struct {
 	jobsManager jobs.JobsManager
@@ -61,10 +62,11 @@ func NewProducerCallbackHandler(jm jobs.JobsManager) *ProducerCallbackHandler {
 	}
 }
 
-func NewRouter(jm jobs.JobsManager, hcf func(http.ResponseWriter, *http.Request)) *mux.Router {
+func NewRouter(jm jobs.JobsManager, hcf func(http.ResponseWriter, *http.Request), swaggerHandler http.HandlerFunc) *mux.Router {
 	callbackHandler := NewProducerCallbackHandler(jm)
 	r := mux.NewRouter()
 	r.HandleFunc(HealthCheckPath, hcf).Methods(http.MethodGet).Name("health_check")
+	r.PathPrefix("/swagger/").Handler(swaggerHandler).Methods(http.MethodGet)
 	r.HandleFunc(AddJobPath, callbackHandler.addInfoJobHandler).Methods(http.MethodPost).Name("add")
 	r.HandleFunc(deleteJobPath, callbackHandler.deleteInfoJobHandler).Methods(http.MethodDelete).Name("delete")
 	r.HandleFunc(logAdminPath, callbackHandler.setLogLevel).Methods(http.MethodPut).Name("setLogLevel")
@@ -73,15 +75,15 @@ func NewRouter(jm jobs.JobsManager, hcf func(http.ResponseWriter, *http.Request)
 	return r
 }
 
-// @Summary      Add info job
-// @Description  Callback for ICS to add an info job
-// @Tags         Data producer (callbacks)
-// @Accept       json
-// @Param        user  body  jobs.JobInfo  true  "Info job data"
-// @Success      200
-// @Failure      400  {object}  ErrorInfo     "Problem as defined in https://tools.ietf.org/html/rfc7807"
-// @Header       400  {string}  Content-Type  "application/problem+json"
-// @Router       /info_job [post]
+//	@Summary		Add info job
+//	@Description	Callback for ICS to add an info job
+//	@Tags			Data producer (callbacks)
+//	@Accept			json
+//	@Param			user	body	jobs.JobInfo	true	"Info job data"
+//	@Success		200
+//	@Failure		400	{object}	ErrorInfo		"Problem as defined in https://tools.ietf.org/html/rfc7807"
+//	@Header			400	{string}	Content-Type	"application/problem+json"
+//	@Router			/info_job [post]
 func (h *ProducerCallbackHandler) addInfoJobHandler(w http.ResponseWriter, r *http.Request) {
 	b, readErr := ioutil.ReadAll(r.Body)
 	if readErr != nil {
@@ -99,12 +101,12 @@ func (h *ProducerCallbackHandler) addInfoJobHandler(w http.ResponseWriter, r *ht
 	}
 }
 
-// @Summary      Delete info job
-// @Description  Callback for ICS to delete an info job
-// @Tags         Data producer (callbacks)
-// @Param        infoJobId  path  string  true  "Info job ID"
-// @Success      200
-// @Router       /info_job/{infoJobId} [delete]
+//	@Summary		Delete info job
+//	@Description	Callback for ICS to delete an info job
+//	@Tags			Data producer (callbacks)
+//	@Param			infoJobId	path	string	true	"Info job ID"
+//	@Success		200
+//	@Router			/info_job/{infoJobId} [delete]
 func (h *ProducerCallbackHandler) deleteInfoJobHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, ok := vars[jobIdToken]
@@ -116,19 +118,19 @@ func (h *ProducerCallbackHandler) deleteInfoJobHandler(w http.ResponseWriter, r 
 	h.jobsManager.DeleteJobFromRESTCall(id)
 }
 
-// @Summary      Set log level
-// @Description  Set the log level of the producer.
-// @Tags         Admin
-// @Param        level  query  string  false  "string enums"  Enums(Error, Warn, Info, Debug)
-// @Success      200
-// @Failure      400  {object}  ErrorInfo     "Problem as defined in https://tools.ietf.org/html/rfc7807"
-// @Header       400  {string}  Content-Type  "application/problem+json"
-// @Router       /admin/log [put]
+//	@Summary		Set log level
+//	@Description	Set the log level of the producer.
+//	@Tags			Admin
+//	@Param			level	query	string	false	"string enums"	Enums(Error, Warn, Info, Debug)
+//	@Success		200
+//	@Failure		400	{object}	ErrorInfo		"Problem as defined in https://tools.ietf.org/html/rfc7807"
+//	@Header			400	{string}	Content-Type	"application/problem+json"
+//	@Router			/admin/log [put]
 func (h *ProducerCallbackHandler) setLogLevel(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	logLevelStr := query.Get(logLevelToken)
-	if loglevel, err := log.ParseLevel(logLevelStr); err == nil {
-		log.SetLevel(loglevel)
+	if logLevel, err := log.ParseLevel(logLevelStr); err == nil {
+		log.SetLevel(logLevel)
 	} else {
 		returnError(fmt.Sprintf("Invalid log level: %v. Log level will not be changed!", logLevelStr), w)
 		return
