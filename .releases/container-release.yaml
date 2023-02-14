@@ -1,10 +1,10 @@
 ---
 distribution_type: container
-container_release_tag: 1.1.0
+container_release_tag: 1.1.1
 container_pull_registry: nexus3.o-ran-sc.org:10004
 container_push_registry: nexus3.o-ran-sc.org:10002
 project: dmaapmediatorproducer
-ref: 74a336a09e06d01780e1566ed1b68ece1ec59b91
+ref: c7ae5b11ccf1a2a80bc71e09a77aa52c0751cda4
 containers:
     - name: nonrtric-plt-dmaapmediatorproducer
-      version: 1.1.0
+      version: 1.1.1
