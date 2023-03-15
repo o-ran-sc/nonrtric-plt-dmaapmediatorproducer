@@ -72,6 +72,9 @@ type JobsManagerImpl struct {
 	distributeClient restclient.HTTPClient
 }
 
+var _ JobsManager = (*JobsManagerImpl)(nil) // Compiler check that the implementation fulfils the interface
+var _ JobTypesManager = (*JobsManagerImpl)(nil)
+
 func NewJobsManagerImpl(pollClient restclient.HTTPClient, mrAddr string, kafkaFactory kafkaclient.KafkaFactory, distributeClient restclient.HTTPClient) *JobsManagerImpl {
 	return &JobsManagerImpl{
 		allTypes:         make(map[string]TypeData),
