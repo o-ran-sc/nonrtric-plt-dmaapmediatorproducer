@@ -47,7 +47,7 @@ func init() {
 }
 
 //	@title	DMaaP Mediator Producer
-
+//	@version	1.0.0
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
