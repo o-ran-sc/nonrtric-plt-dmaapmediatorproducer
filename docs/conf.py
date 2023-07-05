@@ -28,7 +28,10 @@ linkcheck_ignore = [
     './dmaap-mediator-producer-api.html' #Generated file that doesn't exist at link check.
 ]
 
-extensions = ['sphinxcontrib.redoc', 'sphinx.ext.intersphinx',]
+extensions = [
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel',
+]
 
 redoc = [
             {
