@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4446f97c_b2e56fe6",
+        "filename": "docs/api-docs.rst",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1000103
+      },
+      "writtenOn": "2023-07-06T10:00:48Z",
+      "side": 1,
+      "message": "I\u0027m not sure if these need to be \u0027\u003d\u003d\u003d\u003d\u0027 ?",
+      "range": {
+        "startLine": 22,
+        "startChar": 22,
+        "endLine": 22,
+        "endChar": 27
+      },
+      "revId": "8ebe57820c15709cfa1eecae7ee75066b6067070",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b152cc78_bc744db5",
+        "filename": "docs/conf.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000103
+      },
+      "writtenOn": "2023-07-06T10:00:48Z",
+      "side": 1,
+      "message": "my guess is that the html file will not be generated from the openapi file if the extension is removed ... \nWill need to check this.",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 6
+      },
+      "revId": "8ebe57820c15709cfa1eecae7ee75066b6067070",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
