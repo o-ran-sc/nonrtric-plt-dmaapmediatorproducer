@@ -1,4 +1,12 @@
-# O-RAN-SC Non-RealTime RIC DMaaP Mediator Producer
+# O-RAN-SC Non-RealTime RIC DMaaP Mediator Producer (Experimental O-RAN-SC Module)
+
+![Status: Deprecated](https://img.shields.io/badge/status-deprecated-red)
+![Status: Experimental](https://img.shields.io/badge/CVE%20Support-none-lightgrey)
+
+> [!CAUTION]
+> **Deprecated**
+>
+> This repository is no longer actively maintained or supported.
 
 This product is a producer of Information Coordinator Service (ICS) jobs for polling topics in DMaaP Message Router (MR) and pushing the messages to a consumer.
 
@@ -135,7 +143,8 @@ Mocks needed for unit tests can be regenerated with the command `go generate ./.
 
 ## License
 
-Copyright (C) 2021 Nordix Foundation.
+Copyright (C) 2021-2023 Nordix Foundation.
+Copyright (C) 2023-2025 OpenInfra Foundation Europe
 Licensed under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
