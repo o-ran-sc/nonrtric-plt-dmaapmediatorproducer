@@ -13,3 +13,4 @@ Non-RT RIC DMaaP Mediator Producer
    ./developer-guide.rst
    ./api-docs.rst
    ./release-notes.rst
+   ./dmaap-mediator-producer-api.rst

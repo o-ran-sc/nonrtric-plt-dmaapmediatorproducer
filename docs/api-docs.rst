@@ -24,7 +24,7 @@ DMaaP Mediator Producer API
 The DMaaP Mediator Producer provides support for push delivery of any data
 received from DMaaP or Kafka.
 
-See `DMaaP Mediator Producer API <./dmaap-mediator-producer-api.html>`_ for full details of the API.
+See :doc:`dmaap-mediator-producer-api` for full details of the API.
 
 The API is also described in Swagger-JSON and YAML:
 
